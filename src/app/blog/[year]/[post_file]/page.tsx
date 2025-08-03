@@ -6,6 +6,7 @@ import rehypeHighlight from "rehype-highlight";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import styles from "./markdown.module.css";
+import { Mermaid } from "~/components/ui/mermaid";
 
 // Import highlight.js for manual registration if needed
 import "highlight.js/lib/common";
@@ -79,6 +80,22 @@ export default async function BlogPage({ params }: BlogPageProps) {
                 rehypeSlug,
                 [rehypeAutolinkHeadings, { behavior: "wrap" }],
               ]}
+              components={{
+                code({ className, children, ...props }) {
+                  const match = /language-(\w+)/.exec(className ?? "");
+                  const language = match ? match[1] : "";
+
+                  if (language === "mermaid" && typeof children === "string") {
+                    return <Mermaid chart={children.replace(/\n$/, "")} />;
+                  }
+
+                  return (
+                    <code className={className} {...props}>
+                      {children}
+                    </code>
+                  );
+                },
+              }}
             >
               {post.content}
             </ReactMarkdown>

@@ -24,7 +24,7 @@ export function ArticleCard({ post, index, articleLink }: ArticleCardProps) {
       <div className="flex items-center justify-between">
         <AuthorAvatar name={post.author} date={post.date} size="sm" />
         <Link
-          href={`/posts/${index + 1}`}
+          href={articleLink}
           className="text-sm font-medium text-gray-400 transition-colors hover:text-white"
         >
           Read →

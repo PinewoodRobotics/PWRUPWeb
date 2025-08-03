@@ -8,6 +8,7 @@ export { SectionHeader } from "./ui/section-header";
 export { AuthorAvatar } from "./ui/author-avatar";
 export { Badge } from "./ui/badge";
 export { Button } from "./ui/button";
+export { Mermaid } from "./ui/mermaid";
 
 // Home Components
 export { HeroSection } from "./home/hero-section";
