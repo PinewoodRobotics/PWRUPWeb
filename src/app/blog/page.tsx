@@ -5,59 +5,12 @@ import {
   ArticleCard,
   FeaturedArticle,
   Badge,
-  Button,
   HeroSection,
+  type Post,
 } from "~/components";
-import { featuredPost, posts } from "~/lib/data";
 
-const categories = [
-  { name: "All", count: 15, active: true },
-  { name: "Technical", count: 6 },
-  { name: "Competition", count: 4 },
-  { name: "Manufacturing", count: 3 },
-  { name: "Team", count: 2 },
-];
-
-const additionalPosts = [
-  {
-    title: "Mecanum Wheel Drive System Deep Dive",
-    date: "Dec 28, 2023",
-    excerpt:
-      "Understanding the mathematics and control algorithms behind our omnidirectional drive system for maximum field mobility.",
-    author: "Alex Rodriguez",
-    category: "Technical",
-    readTime: "15 min read",
-  },
-  {
-    title: "Vision Processing for Game Element Recognition",
-    date: "Dec 25, 2023",
-    excerpt:
-      "Implementing OpenCV and machine learning pipelines to reliably detect and track game pieces in real-time.",
-    author: "Emma Thompson",
-    category: "Technical",
-    readTime: "12 min read",
-  },
-  {
-    title: "CAD to Reality: Precision Manufacturing Workflow",
-    date: "Dec 22, 2023",
-    excerpt:
-      "Our complete process from digital design to physical parts, ensuring tolerances and quality in every component.",
-    author: "David Kim",
-    category: "Manufacturing",
-    readTime: "8 min read",
-  },
-  {
-    title: "Rookie Year Lessons: What We Learned",
-    date: "Dec 20, 2023",
-    excerpt:
-      "Reflecting on our first competition season and the valuable insights that shaped our approach to robotics.",
-    author: "Sarah Chen",
-    category: "Team",
-    readTime: "7 min read",
-  },
-];
-
-const allPosts = [...posts, ...additionalPosts];
+const featuredPost: Post | null = null;
+const allPosts: Post[] = [];
 
 export default function BlogPage() {
   return (
@@ -66,9 +19,10 @@ export default function BlogPage() {
       <HeroSection />
 
       <main className="mx-auto max-w-6xl px-6">
+        {/* Featured Article */}
         <section id="featured" className="pb-20">
           <SectionHeader title="Featured Article" />
-          <FeaturedArticle post={featuredPost} />
+          {featuredPost && <FeaturedArticle post={featuredPost} />}
         </section>
 
         {/* Recent Articles Grid */}
