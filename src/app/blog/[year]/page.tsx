@@ -7,6 +7,7 @@ import {
   Badge,
   HeroSection,
   type Post,
+  type PostWithLink,
 } from "~/components";
 import { ArchiveCard } from "~/components/articles/archive-card";
 import { api } from "~/trpc/server";
@@ -21,7 +22,7 @@ export default async function BlogPage({ params }: BlogPageProps) {
   const { year } = await params;
   const posts = await api.post.getPosts();
   const postsNow = posts[year];
-  const featuredPost: Post | null = null;
+  const featuredPost: PostWithLink | null = postsNow?.[0] ?? null;
   console.log(posts);
 
   return (
