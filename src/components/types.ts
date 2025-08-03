@@ -6,7 +6,7 @@ export interface Post {
   category: string;
   readTime: string;
   image?: string;
-  content?: string; // Add content field for full post
+  content?: string;
 }
 
 export interface PostWithLink extends Post {

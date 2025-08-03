@@ -28,7 +28,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${jost.className}`}>
-      <body>
+      <body className="bg-gray-950 text-gray-100">
         <TRPCReactProvider>{children}</TRPCReactProvider>
       </body>
     </html>

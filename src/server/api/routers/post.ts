@@ -7,10 +7,7 @@ import { posts } from "~/server/db/schema";
 import path from "path";
 import type { Post, PostWithLink } from "~/components";
 
-async function parsePost(
-  content: string,
-  includeContent = false,
-): Promise<Post> {
+function parsePost(content: string, includeContent = false): Post {
   const lines = content.split("\n");
   const metadata: Partial<Post> = {};
   let contentStartIndex = 0;
@@ -55,10 +52,9 @@ async function parsePost(
   }
 
   // Parse markdown content if requested
-  let parsedContent = undefined;
+  let parsedContent;
   if (includeContent) {
-    const markdownContent = lines.slice(contentStartIndex).join("\n").trim();
-    parsedContent = await marked(markdownContent);
+    parsedContent = lines.slice(contentStartIndex).join("\n").trim();
   }
 
   return {
@@ -113,7 +109,7 @@ export const postRouter = createTRPCRouter({
           path.join(process.cwd(), "public/blogs", folder, file),
           "utf-8",
         );
-        const post = await parsePost(content, false);
+        const post = parsePost(content, false);
         yearPosts.push({
           ...post,
           link: `/blog/${folder}/${file}`,
@@ -143,7 +139,7 @@ export const postRouter = createTRPCRouter({
         );
 
         const content = await fs.readFile(filePath, "utf-8");
-        return await parsePost(content, true); // Include content for individual post
+        return parsePost(content, true); // Include content for individual post
       } catch (error) {
         console.error(
           `Error reading post ${input.year}/${input.filename}:`,

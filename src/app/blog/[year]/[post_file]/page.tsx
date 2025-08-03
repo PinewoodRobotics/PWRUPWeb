@@ -1,5 +1,14 @@
 import { api } from "~/trpc/server";
 import { notFound } from "next/navigation";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeHighlight from "rehype-highlight";
+import rehypeSlug from "rehype-slug";
+import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import styles from "./markdown.module.css";
+
+// Import highlight.js for manual registration if needed
+import "highlight.js/lib/common";
 
 interface BlogPageProps {
   params: Promise<{
@@ -18,15 +27,15 @@ export default async function BlogPage({ params }: BlogPageProps) {
   }
 
   return (
-    <div className="container mx-auto max-w-4xl px-4 py-8">
+    <div className="container mx-auto max-w-5xl bg-gray-950 px-4 py-8 text-gray-100">
       <article className="prose prose-lg mx-auto">
         {/* Header */}
         <header className="mb-8">
-          <h1 className="mb-4 text-4xl font-bold text-gray-900">
+          <h1 className="mb-4 text-4xl font-bold text-gray-100">
             {post.title}
           </h1>
 
-          <div className="mb-6 flex flex-wrap items-center gap-4 text-sm text-gray-600">
+          <div className="mb-6 flex flex-wrap items-center gap-4 text-sm text-gray-400">
             <time dateTime={post.date}>
               {new Date(post.date).toLocaleDateString("en-US", {
                 year: "numeric",
@@ -39,25 +48,41 @@ export default async function BlogPage({ params }: BlogPageProps) {
             <span>•</span>
             <span>{post.readTime}</span>
             <span>•</span>
-            <span className="rounded-full bg-blue-100 px-2 py-1 text-xs text-blue-800">
+            <span className="rounded-full bg-blue-900 px-2 py-1 text-xs text-blue-200">
               {post.category}
             </span>
           </div>
 
           {post.excerpt && (
-            <p className="border-l-4 border-blue-500 pl-4 text-xl text-gray-600 italic">
+            <p className="border-l-4 border-blue-400 pl-4 text-xl text-gray-300 italic">
               {post.excerpt}
             </p>
           )}
+          <div className="mt-10 mb-16 h-1 w-full bg-gray-800" />
         </header>
 
         {/* Content */}
         {post.content && (
           <div
-            className="prose prose-lg max-w-none"
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            dangerouslySetInnerHTML={{ __html: post.content }}
-          />
+            className={`prose prose-invert prose-xl max-w-none ${styles.content}`}
+          >
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              rehypePlugins={[
+                [
+                  rehypeHighlight,
+                  {
+                    detect: true,
+                    ignoreMissing: true,
+                  },
+                ],
+                rehypeSlug,
+                [rehypeAutolinkHeadings, { behavior: "wrap" }],
+              ]}
+            >
+              {post.content}
+            </ReactMarkdown>
+          </div>
         )}
       </article>
     </div>
