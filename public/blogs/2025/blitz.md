@@ -52,4 +52,4 @@ _Some people may suggest I use ROS and, believe me, I HAVE TRIED to get into ROS
 
 ## Introduction
 
-So, I set out to build a home brewed solution for my team -- a interconnected PI network that anyone would be able to use to make code that would run off-roborio easily and simply able to connect it back to the main robot process. The
+So, I set out to build a home brewed solution for my team -- a interconnected PI network that anyone would be able to use to make code that would run off-roborio easily and simply able to connect it back to the main robot process. Firstly, I looked for data passage solutions and tried a few like "nats" etc. However, unfortunately none of the solutions had the intuitive or customizable feel that I so wanted to get from this main part of the project.

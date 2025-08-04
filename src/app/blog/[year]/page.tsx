@@ -23,7 +23,6 @@ export default async function BlogPage({ params }: BlogPageProps) {
   const posts = await api.post.getPosts();
   const postsNow = posts[year];
   const featuredPost: PostWithLink | null = postsNow?.[0] ?? null;
-  console.log(posts);
 
   return (
     <div className="flex min-h-screen flex-col gap-5">
