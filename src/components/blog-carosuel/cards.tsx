@@ -3,11 +3,21 @@
 import { useEffect, useRef } from "react";
 import Lenis from "lenis";
 import CardDemo from "~/components/ui/card";
+import { api } from "~/trpc/react";
 
 // Carousel component for cards
 export function CardCarousel() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const lenisRef = useRef<Lenis | null>(null);
+
+  // Fetch recent blog posts
+  const {
+    data: recentPosts,
+    isLoading,
+    error,
+  } = api.post.getRecentPosts.useQuery({
+    limit: 8,
+  });
 
   useEffect(() => {
     if (!scrollContainerRef.current) return;
@@ -38,6 +48,50 @@ export function CardCarousel() {
     };
   }, []);
 
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="w-full py-20">
+        <h2 className="mb-8 text-center text-3xl font-bold text-white">
+          Recent Blog Posts
+        </h2>
+        <div className="flex justify-center">
+          <div className="text-white">Loading recent posts...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="w-full py-20">
+        <h2 className="mb-8 text-center text-3xl font-bold text-white">
+          Recent Blog Posts
+        </h2>
+        <div className="flex justify-center">
+          <div className="text-red-400">
+            Error loading posts: {error.message}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show empty state
+  if (!recentPosts || recentPosts.length === 0) {
+    return (
+      <div className="w-full py-20">
+        <h2 className="mb-8 text-center text-3xl font-bold text-white">
+          Recent Blog Posts
+        </h2>
+        <div className="flex justify-center">
+          <div className="text-gray-400">No recent posts found.</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full py-20">
       <h2 className="mb-8 text-center text-3xl font-bold text-white">
@@ -54,10 +108,10 @@ export function CardCarousel() {
             {/* Left spacer for scroll padding */}
             <div className="w-[8rem] flex-shrink-0"></div>
 
-            {/* Generate multiple cards */}
-            {Array.from({ length: 8 }, (_, i) => (
-              <div key={i} className="flex-shrink-0">
-                <CardDemo />
+            {/* Render actual blog posts */}
+            {recentPosts.map((post, i) => (
+              <div key={`${post.link}-${i}`} className="flex-shrink-0">
+                <CardDemo post={post} />
               </div>
             ))}
 

@@ -5,6 +5,7 @@ import { Geist } from "next/font/google";
 import { Jost } from "next/font/google";
 
 import { TRPCReactProvider } from "~/trpc/react";
+import { Header } from "~/components/ui/header";
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -29,7 +30,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${jost.className}`}>
       <body className="bg-gray-950 text-gray-100">
-        <TRPCReactProvider>{children}</TRPCReactProvider>
+        <Header />
+        <main className="pt-16">
+          <TRPCReactProvider>{children}</TRPCReactProvider>
+        </main>
+        {/* <Footer /> */}
       </body>
     </html>
   );

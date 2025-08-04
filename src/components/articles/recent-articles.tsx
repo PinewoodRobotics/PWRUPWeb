@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { SectionHeader } from "../ui/section-header";
 import { ArticleCard } from "./article-card";
-import type { Post } from "../types";
+import type { PostWithLink } from "../types";
 
 interface RecentArticlesProps {
-  posts: Post[];
+  posts: PostWithLink[];
 }
 
 export function RecentArticles({ posts }: RecentArticlesProps) {
@@ -24,7 +24,12 @@ export function RecentArticles({ posts }: RecentArticlesProps) {
 
       <div className="grid gap-8 lg:grid-cols-2">
         {posts.map((post, index) => (
-          <ArticleCard key={index} post={post} index={index} />
+          <ArticleCard
+            key={index}
+            post={post}
+            index={index}
+            articleLink={post.link}
+          />
         ))}
       </div>
     </section>

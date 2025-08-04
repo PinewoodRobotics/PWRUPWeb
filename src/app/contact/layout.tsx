@@ -26,11 +26,5 @@ const jost = Jost({
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  return (
-    <html lang="en" className={`${jost.className}`}>
-      <body className="bg-gray-950 text-gray-100">
-        <TRPCReactProvider>{children}</TRPCReactProvider>
-      </body>
-    </html>
-  );
+  return <div>{children}</div>;
 }

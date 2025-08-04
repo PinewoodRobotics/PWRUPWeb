@@ -1,16 +1,16 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import {
-  Header,
-  Footer,
   SectionHeader,
   ArticleCard,
   FeaturedArticle,
-  Badge,
   HeroSection,
-  type Post,
   type PostWithLink,
 } from "~/components";
 import { ArchiveCard } from "~/components/articles/archive-card";
-import { api } from "~/trpc/server";
+import { BlogFilters } from "~/components/blog/blog-filters";
+import { api } from "~/trpc/react";
 
 interface BlogPageProps {
   params: Promise<{
@@ -18,11 +18,34 @@ interface BlogPageProps {
   }>;
 }
 
-export default async function BlogPage({ params }: BlogPageProps) {
-  const { year } = await params;
-  const posts = await api.post.getPosts();
-  const postsNow = posts[year];
-  const featuredPost: PostWithLink | null = postsNow?.[0] ?? null;
+export default function BlogPage({ params }: BlogPageProps) {
+  const [year, setYear] = useState<string>("");
+  const [filteredPosts, setFilteredPosts] = useState<PostWithLink[]>([]);
+
+  // Get the year from params
+  useEffect(() => {
+    params.then(({ year: yearParam }) => {
+      setYear(yearParam);
+    });
+  }, [params]);
+
+  // Fetch posts
+  const { data: allPosts, isLoading } = api.post.getPosts.useQuery();
+  const postsNow = allPosts?.[year] ?? [];
+  const featuredPost: PostWithLink | null = filteredPosts[0] ?? null;
+
+  // Handle filtered posts change
+  const handleFilteredPostsChange = (filtered: PostWithLink[]) => {
+    setFilteredPosts(filtered);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-white">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen flex-col gap-5">
@@ -35,56 +58,64 @@ export default async function BlogPage({ params }: BlogPageProps) {
           {featuredPost && <FeaturedArticle post={featuredPost} />}
         </section>
 
-        {/* Recent Articles Grid */}
-        <section className="pb-20">
-          <SectionHeader
-            title="All Articles"
-            action={
-              <div className="flex items-center space-x-4">
-                <span className="text-sm text-gray-500">
-                  Showing {postsNow?.length ?? 0} articles
-                </span>
-              </div>
-            }
+        {/* Filters */}
+        <section className="pb-8">
+          <BlogFilters
+            posts={postsNow}
+            onFilteredPostsChange={handleFilteredPostsChange}
           />
+        </section>
+
+        {/* Articles Grid */}
+        <section className="pb-20">
+          <SectionHeader title="All Articles" />
 
           <div className="grid gap-8 lg:grid-cols-2">
-            {postsNow?.map((post, index) => (
+            {filteredPosts.map((post: PostWithLink, index: number) => (
               <ArticleCard
-                key={index}
+                key={`${post.link}-${index}`}
                 post={post}
                 index={index}
                 articleLink={post.link}
               />
             ))}
           </div>
+
+          {filteredPosts.length === 0 && postsNow.length > 0 && (
+            <div className="py-12 text-center">
+              <p className="text-gray-400">
+                No articles match your current filters.
+              </p>
+            </div>
+          )}
         </section>
 
-        <section className="border-t border-gray-800/50 py-20">
-          <SectionHeader title="Archive" />
+        {allPosts && (
+          <section className="border-t border-gray-800/50 py-20">
+            <SectionHeader title="Archive" />
 
-          <div className="grid gap-4 md:grid-cols-3">
-            <ArchiveCard
-              key={year}
-              title={year}
-              articleCount={posts[year]?.length ?? 0}
-              badgeVariant="primary"
-              clickLink={`/blog/${year}`}
-            />
-            {/* for year in posts */}
-            {Object.keys(posts)
-              .filter((postYear) => postYear !== year)
-              .map((postYear) => (
-                <ArchiveCard
-                  key={postYear}
-                  title={postYear}
-                  articleCount={posts[postYear]?.length ?? 0}
-                  badgeVariant="secondary"
-                  clickLink={`/blog/${postYear}`}
-                />
-              ))}
-          </div>
-        </section>
+            <div className="grid gap-4 md:grid-cols-3">
+              <ArchiveCard
+                key={year}
+                title={year}
+                articleCount={allPosts[year]?.length ?? 0}
+                badgeVariant="primary"
+                clickLink={`/blog/${year}`}
+              />
+              {Object.keys(allPosts)
+                .filter((postYear) => postYear !== year)
+                .map((postYear) => (
+                  <ArchiveCard
+                    key={postYear}
+                    title={postYear}
+                    articleCount={allPosts[postYear]?.length ?? 0}
+                    badgeVariant="secondary"
+                    clickLink={`/blog/${postYear}`}
+                  />
+                ))}
+            </div>
+          </section>
+        )}
       </main>
     </div>
   );

@@ -7,6 +7,7 @@ import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import styles from "./markdown.module.css";
 import { Mermaid } from "~/components/ui/mermaid";
+import { TracingBeam } from "~/components/ui/tracing-beam";
 
 // Import highlight.js for manual registration if needed
 import "highlight.js/lib/common";
@@ -28,80 +29,86 @@ export default async function BlogPage({ params }: BlogPageProps) {
   }
 
   return (
-    <div className="container mx-auto max-w-5xl bg-gray-950 px-4 py-8 text-gray-100">
-      <article className="prose prose-lg mx-auto">
-        {/* Header */}
-        <header className="mb-8">
-          <h1 className="mb-4 text-4xl font-bold text-gray-100">
-            {post.title}
-          </h1>
+    <div className="bg-gray-950 text-gray-100">
+      <TracingBeam className="px-6">
+        <div className="container mx-auto max-w-4xl py-8">
+          <article className="prose prose-lg mx-auto">
+            {/* Header */}
+            <header className="mb-10">
+              <div className="mb-4 w-fit rounded-full bg-black px-4 py-1 text-sm text-white">
+                {post.category}
+              </div>
 
-          <div className="mb-6 flex flex-wrap items-center gap-4 text-sm text-gray-400">
-            <time dateTime={post.date}>
-              {new Date(post.date).toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}
-            </time>
-            <span>•</span>
-            <span>By {post.author}</span>
-            <span>•</span>
-            <span>{post.readTime}</span>
-            <span>•</span>
-            <span className="rounded-full bg-blue-900 px-2 py-1 text-xs text-blue-200">
-              {post.category}
-            </span>
-          </div>
+              <h1 className="mb-4 text-4xl font-bold text-gray-100">
+                {post.title}
+              </h1>
 
-          {post.excerpt && (
-            <p className="border-l-4 border-blue-400 pl-4 text-xl text-gray-300 italic">
-              {post.excerpt}
-            </p>
-          )}
-          <div className="mt-10 mb-16 h-1 w-full bg-gray-800" />
-        </header>
+              <div className="mb-6 flex flex-wrap items-center gap-4 text-sm text-gray-400">
+                <time dateTime={post.date}>
+                  {new Date(post.date).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </time>
+                <span>•</span>
+                <span>By {post.author}</span>
+                <span>•</span>
+                <span>{post.readTime}</span>
+              </div>
 
-        {/* Content */}
-        {post.content && (
-          <div
-            className={`prose prose-invert prose-xl max-w-none ${styles.content}`}
-          >
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              rehypePlugins={[
-                [
-                  rehypeHighlight,
-                  {
-                    detect: true,
-                    ignoreMissing: true,
-                  },
-                ],
-                rehypeSlug,
-                [rehypeAutolinkHeadings, { behavior: "wrap" }],
-              ]}
-              components={{
-                code({ className, children, ...props }) {
-                  const match = /language-(\w+)/.exec(className ?? "");
-                  const language = match ? match[1] : "";
+              {post.excerpt && (
+                <p className="border-l-4 border-lime-400 pl-4 text-xl text-gray-300 italic">
+                  {post.excerpt}
+                </p>
+              )}
+            </header>
 
-                  if (language === "mermaid" && typeof children === "string") {
-                    return <Mermaid chart={children.replace(/\n$/, "")} />;
-                  }
+            {/* Content */}
+            {post.content && (
+              <div
+                className={`prose prose-sm dark:prose-invert text-sm ${styles.content}`}
+              >
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  rehypePlugins={[
+                    [
+                      rehypeHighlight,
+                      {
+                        detect: true,
+                        ignoreMissing: true,
+                      },
+                    ],
+                    rehypeSlug,
+                    [rehypeAutolinkHeadings, { behavior: "wrap" }],
+                  ]}
+                  components={{
+                    code({ className, children, ...props }) {
+                      const match = /language-(\w+)/.exec(className ?? "");
+                      const language = match ? match[1] : "";
 
-                  return (
-                    <code className={className} {...props}>
-                      {children}
-                    </code>
-                  );
-                },
-              }}
-            >
-              {post.content}
-            </ReactMarkdown>
-          </div>
-        )}
-      </article>
+                      if (
+                        language === "mermaid" &&
+                        typeof children === "string"
+                      ) {
+                        return <Mermaid chart={children.replace(/\n$/, "")} />;
+                      }
+
+                      return (
+                        <code className={className} {...props}>
+                          {children}
+                        </code>
+                      );
+                    },
+                  }}
+                >
+                  {post.content}
+                </ReactMarkdown>
+              </div>
+            )}
+          </article>
+        </div>
+      </TracingBeam>
     </div>
   );
 }

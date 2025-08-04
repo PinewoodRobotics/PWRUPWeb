@@ -148,4 +148,55 @@ export const postRouter = createTRPCRouter({
         return null;
       }
     }),
+
+  getRecentPosts: publicProcedure
+    .input(
+      z
+        .object({
+          limit: z.number().min(1).max(20).default(8),
+        })
+        .optional(),
+    )
+    .query(async ({ input }) => {
+      const limit = input?.limit ?? 8;
+
+      try {
+        const allYears = await fs.readdir(
+          path.join(process.cwd(), "public/blogs"),
+        );
+        const allPosts: PostWithLink[] = [];
+
+        // Collect all posts from all years
+        for (const folder of allYears) {
+          const files = await fs.readdir(
+            path.join(process.cwd(), "public/blogs", folder),
+          );
+
+          for (const file of files) {
+            const content = await fs.readFile(
+              path.join(process.cwd(), "public/blogs", folder, file),
+              "utf-8",
+            );
+            const post = parsePost(content, false);
+            allPosts.push({
+              ...post,
+              link: `/blog/${folder}/${file}`,
+            });
+          }
+        }
+
+        // Sort posts by date (newest first) and limit results
+        const sortedPosts = allPosts
+          .filter((post) => post.date) // Only include posts with dates
+          .sort(
+            (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+          )
+          .slice(0, limit);
+
+        return sortedPosts;
+      } catch (error) {
+        console.error("Error reading recent posts:", error);
+        return [];
+      }
+    }),
 });

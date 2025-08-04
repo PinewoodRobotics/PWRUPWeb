@@ -22,7 +22,7 @@ export default async function Home() {
       {/* Smooth scroll wrapper for homepage content only */}
       <SmoothScroll>
         {/* Your scrollable content */}
-        <main className="relative z-10 min-h-[100vh]">
+        <main className="relative z-10 -mt-20 min-h-[100vh]">
           <div
             id="coverTitle"
             className="flex h-screen w-screen items-center justify-center"
